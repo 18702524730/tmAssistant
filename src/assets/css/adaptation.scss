@@ -1,0 +1,9 @@
+/* 计算公式   设计稿的图 750px  100vw 表示 750px   375pt
+  4.2666666667vw是 设定的 html的font-size: 16px;
+  16/3.75 = 4.26666667;  devicePixelRatio  1dpr为 2      1rem为 16*1dpr；
+*/
+
+@function px($px){
+    $rem : 32;
+    @return ($px/$rem) + rem;
+}

@@ -1,0 +1,157 @@
+<template>
+  <Tips />
+  <view class="appointServicer" wx:if="{{show}}" @tap="back">
+		<view class="wrap" style="height: {{formH}}">
+	    <form class="servicerF" @submit="confirm">
+	    	<view class="close"><image @tap="back" src="/images/confirm/close.png"/></view>
+	    	<view class="til">国内商标注册申请（极速版）</view>
+	      <view class="input_wrap">
+		    	<input type="number" id="idcode" cursor-spacing="90" placeholder-class="placeholder" name="idcode" confirm-type="done" maxlength="4" placeholder="请输入服务商识别码"  @input="autoJudge" @blur="input" catchtap="f"/>
+		    </view>
+		    <button class="confirm-btn" form-type="submit">确定</button>
+	    </form>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  import baseApi from '../../api/base';
+  import auth from '../../api/auth';
+  import confirm from '../../api/confirm';
+  import base from '../../mixins/base';
+  import input from '../../mixins/input';
+  import FormTips from '../../components/weui/tips';
+  import VCode from '../../components/weui/vcode';
+  import Tips from '../../utils/Tips';
+  import WxUtils from '../../utils/WxUtils';
+  const H = '382rpx'
+  export default class Validate extends wepy.component {
+    def = {
+      init: false,
+      loginMassage: {},
+      formH: 0
+    };
+    data = {...this.def};
+    props = {
+      show: {
+        type: Boolean,
+        default: false
+      }
+    };
+
+    methods = {
+    	f(){},//阻止冒泡
+      autoJudge(e){
+        if (e.detail.cursor === 4) {
+          wepy.hideKeyboard();
+        }
+      },
+      back() {
+        this.$emit('back');
+      },
+      async confirm({detail}) {
+      	var self = this;
+        if (!this.isValid()) {
+          return;
+        }
+        let data = {
+          productPriceId: 1,
+          idCode: this.input.idcode
+        }
+        let url = baseApi.cartUrl + '/cartWeb/validateIdCode.htm';
+
+        var setHeader = function (){
+			  	const token = wepy.getStorageSync('key');
+			    const sessionId = wepy.getStorageSync('sessionId');
+			    const header = {};
+			    if (token) {
+			      header['Authorization'] = token;
+			    }
+			    if (sessionId) {
+			      header['SessionId'] = sessionId;
+			    }
+			    return header;
+			  }
+
+        let header = setHeader();
+		  	header['content-type'] = 'application/x-www-form-urlencoded';
+		    wx.request({
+				  url: url,
+				  method: 'POST',
+				  data: data,
+				  header: header,
+				  success(res){
+				  	var data = res.data;
+				  	if (data.code == '200') {
+	          	self.$emit('complete', data.idCode);
+	          }else{
+	          	self.tips('该服务商账号异常');
+	          }
+				  },
+				  fail(){
+				  	self.tips('系统异常');
+				  }
+				});
+      },
+
+    };
+    watch = {
+      show(){
+        this.formH = this.show ? H : '0';
+        this.$apply();
+      }
+    }
+
+    /**
+     * 校验表单提交
+     */
+    isValid() {
+      if (this.isEmpty(this.input.idcode)) {
+        this.tips('请输入服务商识别码');
+        return false;
+      }
+      return true;
+    }
+    mixins = [input, base];
+    components = {
+      Tips: FormTips,
+      VCode: VCode
+      // Copyright: Copyright
+    };
+  }
+</script>
+
+<style lang="scss">
+  @import "../../styles/variable";
+  .appointServicer{
+    position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.50);z-index: 3;
+    .wrap{position: absolute;bottom:0;width: 100%;height:0;padding:30rpx 30rpx 25rpx;box-sizing: border-box;background-color: #FFF;border-top-left-radius:10rpx;border-top-right-radius:10rpx; transition: height 0.2s ease-out; overflow: hidden;
+    	.servicerF{
+    		position: relative;display: block;width: 100%;height: 100%;
+		  	.close{
+		      position: absolute; right:0; top:0;text-align: right;
+		      image{width: 24rpx;height: 24rpx;}
+		    }
+		    .til{
+		      height: 48rpx; padding-top:30rpx;text-align: center;color: #515F71;font-size:$text-xxl;
+		    }
+		    .form{
+		      text,view{font-family: $font-family;}
+		    }
+		    .input_wrap{
+		    	text-align: center;border-bottom: $border;padding: 20rpx 0;margin: 16rpx 10rpx 0;
+		    	input{font-size: 46rpx;color: #515F71;line-height:46rpx;}
+		    	.input-placeholder{color: #B3BFD0;font-size: $text-lg;}
+		    }
+		    .tips{
+		      font-size: $text-xs;color: #888888;line-height: 33rpx;padding:0 30rpx;
+		      text{color: #2F80F6;font-size: $text-xs;}
+		    }
+		    .confirm-btn{
+		      position: absolute; bottom:0; left:0;width: 100%;background-image: linear-gradient(147deg, #0096FF 0%, #2F80F6 100%);border-radius: 8rpx;height: 96rpx;line-height:96rpx;font-size: $text-xxl;color: #fff;
+		      &::after{border:0;}
+		    }
+	    }
+    }
+  }
+</style>

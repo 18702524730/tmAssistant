@@ -1,0 +1,65 @@
+$font-family: "PingFangSC-Regular", "Microsoft YaHei", Tahoma, Helvetica, Arial, \5b8b\4f53, sans-serif;
+//******字体颜色变量******/
+$color-major: #FF6200;
+$color-primary: #2F80F6;
+$color-primary-darken: darken($color-primary, 5%);
+$color-muted: #A3A3A3;
+$color-weak: #626E7A;
+$color-normal: #333333;
+$color-danger: #e33;
+$color-warn: #f85;
+
+//******字体大小变量******/
+$text-xxl: 34rpx;
+$text-xl: 32rpx;
+$text-nm: 28rpx;
+$text-lg: 30rpx;
+$text-sm: 26rpx;
+$text-xs: 24rpx;
+$text-xxs: 22rpx;
+$text-form: 18rpx;
+
+//******边框样式******/
+$color-border: #e5e5e5;
+$border: 1rpx solid $color-border;
+$border-dot: 1rpx dot #DDDDDD;
+$border-dash: 1rpx dashed #DDDDDD;
+
+
+//******背景样式******/
+$color-bg-body: #F5F5F5;
+$color-bg-item: #FAFAFA;
+
+//mixin
+@mixin icon-image($size){
+  height: $size;
+  width: $size;
+  vertical-align: middle;
+}
+
+@mixin icon-round($size){
+  @include icon-image($size);
+  border-radius: 50%;
+}
+
+@mixin fadeIn($time){
+  animation: fadein $time;
+  @keyframes fadein {
+      0%{
+        opacity: 0;
+      }
+      100%{
+        opacity: 1;
+      }
+    }
+}
+
+@mixin border-bottom($color: #e5e5e5){
+    border-bottom:1px solid $color;
+    @media screen and (-webkit-min-device-pixel-ratio: 2) {
+    border-bottom: 0.5px solid $color;
+    }
+    @media screen and (-webkit-min-device-pixel-ratio: 3) {
+    border-bottom: 0.333333px solid $color;
+    }
+}
